@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Технически характеристики на монети</title>
+    <script type="text/javascript" src="https://www.bullionvault.com/banners/live_price_widget.js?v=1"></script>
+    <script type="text/javascript" src="https://www.bullionvault.com/chart/bullionvaultchart.js?v=1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fef5e7 0%, #fdeaa3 100%);
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        #goldPriceWidget {
+            width: 100%;
+            background: #fff;
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid #d4af37;
+            min-height: 100px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            line-height: 1.2;
+        }
+        
+        .table-container {
+            padding: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed; /* Гарантира фиксирана ширина на колоните */
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 10px 8px;
+            text-align: left;
+            font-size: 14px;
+            width: 33.33%; /* Еднаква ширина за трите графи */
+            word-wrap: break-word;
+        }
+        
+        .coin-row {
+            height: 45px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .coin-row:nth-of-type(4n+1) {
+            background: #fef5e7;
+        }
+
+        .coin-row td:first-child {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .coin-row:hover {
+            background: #fdeaa3 !important;
+        }
+        
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        
+        .coin-details {
+            display: none;
+            background: #fffdf9 !important;
+        }
+        
+        .coin-details.active {
+            display: table-row;
+        }
+        
+        .coin-details td {
+            padding: 10px;
+            border-bottom: 2px solid #d4af37;
+            width: 100%; /* Детайлите заемат целия ред */
+        }
+        
+        .detail-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .detail-item {
+            padding: 6px 12px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+            width: fit-content;
+            min-width: 200px;
+        }
+        
+        .detail-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+        
+        .detail-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #b8860b;
+        }
+
+        .calculator-section {
+            padding: 30px 20px;
+            background: white;
+            border-top: 5px solid #d4af37;
+            text-align: center;
+        }
+
+        .calculator-title {
+            font-size: 19px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .calc-wrapper {
+            max-width: 320px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .calc-group {
+            margin-bottom: 15px;
+        }
+
+        .calc-group label {
+            display: block;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .calc-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .calc-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .calc-group input[readonly] {
+            background-color: #f9f9f9;
+            color: #b8860b;
+            font-weight: bold;
+        }
+
+        .chart-section {
+            padding: 20px 10px;
+            background: #fff;
+            border-top: 5px solid #d4af37;
+            text-align: center;
+        }
+
+        #chartContainer {
+            width: 100%;
+            height: 400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="goldPriceWidget"></div>
+
+        <div class="header">
+            <h1>Технически характеристики на Европейски златни монети</h1>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Номинал и вид</th>
+                        <th>Стандартно тегло (g)</th>
+                        <th>Минимално тегло (g)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="coin-row" onclick="toggleDetails(0)"><td>10 франка</td><td>3.226</td><td>3.20</td></tr>
+                    <tr class="coin-details" id="details-0"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">2.90 g (0.0933 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">19.0 × 0.9 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(1)"><td>5 гулдена</td><td>3.365</td><td>3.34</td></tr>
+                    <tr class="coin-details" id="details-1"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">3.03 g (0.0972 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">18.0 × 1.2 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(2)"><td>10 корони</td><td>3.388</td><td>3.36</td></tr>
+                    <tr class="coin-details" id="details-2"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">3.05 g (0.0980 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">19.0 × 1.0 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(3)"><td>1 дукат</td><td>3.491</td><td>3.46</td></tr>
+                    <tr class="coin-details" id="details-3"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">986‰ (23.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">3.44 g (0.1107 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">19.8 × 0.8 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(4)"><td>10 марки</td><td>3.982</td><td>3.95</td></tr>
+                    <tr class="coin-details" id="details-4"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">3.58 g (0.1152 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">19.5 × 0.9 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(5)"><td>20 франка</td><td>6.452</td><td>6.39</td></tr>
+                    <tr class="coin-details" id="details-5"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">5.81 g (0.1867 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">21.0 × 1.3 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(6)"><td>10 гулдена</td><td>6.729</td><td>6.67</td></tr>
+                    <tr class="coin-details" id="details-6"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">6.05 g (0.1947 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">22.5 × 1.4 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(7)"><td>20 корони</td><td>6.775</td><td>6.71</td></tr>
+                    <tr class="coin-details" id="details-7"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">6.10 g (0.1960 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">21.0 × 1.3 mm</div></div></div></td></tr>
+                    <tr class="coin-row" onclick="toggleDetails(8)"><td>20 марки</td><td>7.965</td><td>7.89</td></tr>
+                    <tr class="coin-details" id="details-8"><td colspan="3"><div class="detail-content"><div class="detail-item"><div class="detail-label">Чистота на пробата</div><div class="detail-value">900‰ (21.6 карата)</div></div><div class="detail-item"><div class="detail-label">Съдържание на чисто злато</div><div class="detail-value">7.17 g (0.2305 oz)</div></div><div class="detail-item"><div class="detail-label">Размери (диаметър × дебелина)</div><div class="detail-value">22.5 × 1.4 mm</div></div></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="calculator-section">
+            <div class="calculator-title">Калкулатор за минимално тегло</div>
+            <div class="calc-wrapper">
+                <div class="calc-group">
+                    <label>Стандартно тегло (g)</label>
+                    <input type="number" id="stdInput" step="0.001" placeholder="0.000">
+                </div>
+                <div class="calc-group">
+                    <label>Минимално тегло (g)</label>
+                    <input type="text" id="minResult" readonly placeholder="0.00">
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div id="chartContainer"></div>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        function initElements() {
+            if (typeof BullionVaultPriceWidget === 'function') {
+                new BullionVaultPriceWidget('goldPriceWidget', {
+                    bullion: "gold",
+                    currency: "EUR",
+                    weightUnit: "TOZ",
+                    size: "250x250"
+                });
+            }
+
+            if (typeof BullionVaultChart === 'function') {
+                var chartOptions = {
+                    bullion: 'gold',
+                    currency: 'EUR',
+                    timeframe: '1q',
+                    chartType: 'line',
+                    containerDefinedSize: true,
+                    switchBullion: true,
+                    switchCurrency: true,
+                    switchTimeframe: true
+                };
+                new BullionVaultChart(chartOptions, 'chartContainer');
+            }
+        }
+        
+        window.onload = initElements;
+
+        function toggleDetails(index) {
+            const detailRow = document.getElementById('details-' + index);
+            const isActive = detailRow.classList.contains('active');
+            document.querySelectorAll('.coin-details').forEach(row => row.classList.remove('active'));
+            if (!isActive) detailRow.classList.add('active');
+        }
+
+        document.getElementById('stdInput').addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            const resultField = document.getElementById('minResult');
+            if (!isNaN(val) && val > 0) {
+                const minWeight = val * 0.99;
+                resultField.value = (Math.ceil(minWeight * 100) / 100).toFixed(2);
+            } else {
+                resultField.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
+
